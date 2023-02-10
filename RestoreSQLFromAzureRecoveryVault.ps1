@@ -42,7 +42,7 @@
 
 .NOTES
     AUTHOR: Trey Troegel
-    LASTEDIT: July 13, 2020
+    LASTEDIT: Feb 03, 2023
 #>
 
 param
@@ -108,7 +108,7 @@ Write-Verbose –Message "Finding backup items from $($SourceBackupServerFQDN)"
 Write-Verbose –Message ""
 # There can be multiple database backups with the same name, but from different source servers registered in with vault. A common scenario would be the SQL system databases (master, msdb etc.).
 # Therefore, we need to filter Get-AzRecoveryServicesBackupItem by $SourceBackupServerFQDN in order to target the correct backup.
-$bkpItem = Get-AzRecoveryServicesBackupItem -BackupManagementType AzureWorkload -WorkloadType MSSQL -Name $BkupToRestore -VaultId $vault.ID | Where-Object ServerName -eq $SourceBackupServerFQDN
+$bkpItem = Get-AzRecoveryServicesBackupItem -BackupManagementType AzureWorkload -WorkloadType MSSQL -Name $BkupToRestore -VaultId $vault.ID | Where-Object ServerName -eq $SourceBackupServerFQDN | Where-Object {$_.Name.EndsWith(";$BkupToRestore")}
 
 $startDate = (Get-Date).AddDays(-14).ToUniversalTime()
 $endDate = (Get-Date).ToUniversalTime()
